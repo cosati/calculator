@@ -11,8 +11,8 @@
         <div id="display"></div>
         <div id="kb">
           <form onsubmit="">
-            <input type="button" class="btn clear" value="C" onclick="clear()">
-            <input type="button" class="btn backspace" value="←">
+            <input type="button" class="btn clear" value="C" onclick="clearDisplay()">
+            <input type="button" class="btn backspace" value="←" onclick="backspace()">
             <input type="button" class="btn op" value="%">
             <input type="button" class="btn op" value="√">
             <input type="button" class="btn" value="7" onclick="number(this.value)">
@@ -26,9 +26,9 @@
             <input type="button" class="btn" value="1" onclick="number(this.value)">
             <input type="button" class="btn" value="2" onclick="number(this.value)">
             <input type="button" class="btn" value="3" onclick="number(this.value)">
-            <input type="button" class="btn op" value="-">
+            <input type="button" class="btn op" value="-" onclick="">
             <input type="button" class="btn" value="0" onclick="number(this.value)">
-            <input type="button" class="btn" value="." onclick="number(this.value)">
+            <input type="button" class="btn" value="." onclick="addDecimal()">
             <input type="button" class="btn op" value="=" onclick="operate()">
             <input type="button" class="btn op" value="+">
           </form>
