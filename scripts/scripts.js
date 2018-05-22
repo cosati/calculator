@@ -7,17 +7,23 @@ window.addEventListener('DOMContentLoaded', function () {
 	display.innerHTML = numberDisplay;
 });
 
+// Add number to display
 function number(n) {
-  numberDisplay = numberDisplay != 0 ? "" + numberDisplay + n : n;
+  numberDisplay = numberDisplay != 0 || decimal ? "" + numberDisplay + n : n; // erases 0 except if decimal added
   display.innerHTML = numberDisplay;
 	console.log(n + " pressed");
 }
 
+// Adds decimal point
 function addDecimal() {
 	console.log(!decimal ? "Decimal point" : "Oops! Can't do that!");
   numberDisplay = ((!decimal) ? numberDisplay + "." : numberDisplay);
 	display.innerHTML = numberDisplay;
 	decimal = true;
+}
+
+function node() {
+	
 }
 
 function clearDisplay() {
@@ -31,7 +37,7 @@ function backspace() {
 	numberDisplay = numberDisplay.length > 1 ? numberDisplay = numberDisplay.slice(0, -1) : numberDisplay = 0;
 	display.innerHTML = numberDisplay;
 }
-
+/*
 function addNode(operator) {
 	let node = {
 		operator,
@@ -40,6 +46,7 @@ function addNode(operator) {
 	if (tree === undefined) tree = node;
 	else
 }
+*/
 
 function operate() {
 
