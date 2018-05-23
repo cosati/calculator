@@ -1,34 +1,88 @@
-let numberDisplay = 0;
-let decimal = false;
-let tree = undefined;
+let hasDecimal = false;
+let current = 0;
+let isOperator = false;
+let array = [];
 
 window.addEventListener('DOMContentLoaded', function () {
 	const display = document.querySelector('#display');
-	display.innerHTML = numberDisplay;
+	display.innerHTML = 0;
 });
 
 // Add number to display
-function number(n) {
-  numberDisplay = numberDisplay != 0 || decimal ? "" + numberDisplay + n : n; // erases 0 except if decimal added
-  display.innerHTML = numberDisplay;
-	console.log(n + " pressed");
+function pressButton(n) {
+	// TODO press operator before number
+	// TODO press minus before anything else
+	if (current != 0) current += n;
+	else current = n;
+	display.innerHTML = current;
+	isOperator = false;
+}
+
+function pressOperator(o) {
+	// TODO press different operators simultaniously
+	let operator = " + ";
+	switch (o) {
+		case "minus":
+			operator = " - ";
+			break;
+		case "multiply":
+			operator = " ร— ";
+			break;
+		case "divide":
+			operator = " รท ";
+			break;
+		default:
+			operator = " + "
+	}
+	//current = (isOperator ? )
+	current = current + operator;
+	display.innerHTML = current;
+	isOperator = true;
+	hasDecimal = false;
 }
 
 // Adds decimal point
-function addDecimal() {
-	console.log(!decimal ? "Decimal point" : "Oops! Can't do that!");
-  numberDisplay = ((!decimal) ? numberDisplay + "." : numberDisplay);
+function adddecimal() {
+	console.log(!decimal ? "decimal point" : "Oops! Can't do that!");
+  current = ((!decimal) ? numberDisplay + "." : numberDisplay);
 	display.innerHTML = numberDisplay;
-	decimal = true;
+	hasDecimal = true;
 }
 
 function node() {
 	
 }
 
+function displayNumbers() {
+	let aux = _tree;
+	let numberDisplay = "";
+	while (aux != undefined) {
+		let op = "";
+		switch (aux.operator) {
+			case "plus":
+				op = numberDisplay != "" ? " + " : "";
+				break;
+			case "minus":
+				op = numberDisplay != "" ? " - " : "";
+				break;
+			case "multiply":
+				op = numberDisplay != "" ? " x " : "";
+				break;
+			case "divide":
+				op = numberDisplay != "" ? " / " : "";
+				break;
+		}
+		numberDisplay = numberDisplay + aux.number + op;
+		aux = aux.next;
+	};	
+	numberDisplay = numberDisplay + current;
+	display.innerHTML = numberDisplay;
+}
+
 function clearDisplay() {
   decimal = false;
-  numberDisplay = 0;
+  current = 0;
+  isOperator = false;
   display.innerHTML = numberDisplay;
 }
 
@@ -37,17 +91,54 @@ function backspace() {
 	numberDisplay = numberDisplay.length > 1 ? numberDisplay = numberDisplay.slice(0, -1) : numberDisplay = 0;
 	display.innerHTML = numberDisplay;
 }
-/*
+
 function addNode(operator) {
+	
 	let node = {
 		operator,
-		left: numberDisplay,
+		number: current,
+		next: undefined,
+	};
+	if (_tree === undefined) {
+		_tree = node;
+		tree_ = node;
 	}
-	if (tree === undefined) tree = node;
-	else
+	else {
+		let aux = _tree;
+		while (aux.next != undefined) {
+			aux = aux.next;
+		};
+	aux.next = node;
+	tree_ = node;
+	}
+	displayNumbers();
 }
-*/
+
 
 function operate() {
-
+	// TODO order priorityu operation
+	let ans = 0;
+	for (let i = 0; i < array.length; i++) {
+		switch (array[i].operator) {
+			case 'sum':
+				ans += array[i].number;
+				break;
+			case 'sub':
+				ans -= array[i].number;
+				break;
+			case 'div':
+				ans = ans / array[i].number;
+				break;
+			case 'mul':
+				ans = ans * array[i].number;
+				break;
+		}
+	}
 }
+
+/*
+{
+	number,
+	operator,
+}
+*/
