@@ -1,89 +1,85 @@
-let hasDecimal = false;
 let current = 0;
-let isOperator = false;
 let array = [];
 
 window.addEventListener('DOMContentLoaded', function () {
 	const display = document.querySelector('#display');
-	display.innerHTML = 0;
+	createNode('sum', 0, false);
+	displayNumbers();
 });
 
 // Add number to display
 function pressButton(n) {
 	// TODO press operator before number
 	// TODO press minus before anything else
-	if (current != 0) current += n;
+	if (current != 0) current += "" + n; 
 	else current = n;
-	display.innerHTML = current;
-	isOperator = false;
+	displayNumbers();
 }
 
 function pressOperator(o) {
 	// TODO press different operators simultaniously
-	let operator = " + ";
+	let operator;
 	switch (o) {
-		case "minus":
+		case "sub":
 			operator = " - ";
 			break;
-		case "multiply":
-			operator = " ร— ";
+		case "mul":
+			operator = " × ";
 			break;
-		case "divide":
-			operator = " รท ";
+		case "div":
+			operator = " ÷ ";
 			break;
 		default:
 			operator = " + "
 	}
-	//current = (isOperator ? )
-	current = current + operator;
-	display.innerHTML = current;
-	isOperator = true;
-	hasDecimal = false;
+	// array[array.length-1].operator = o;
+	// array[array.length-1].number = current;
+	createNode(o, current, false);
+	current = "";
+	displayNumbers();
+	current = 0;
+	// Add another node to array
 }
 
-// Adds decimal point
-function adddecimal() {
-	console.log(!decimal ? "decimal point" : "Oops! Can't do that!");
-  current = ((!decimal) ? numberDisplay + "." : numberDisplay);
-	display.innerHTML = numberDisplay;
-	hasDecimal = true;
-}
+function createNode(operator, number, isDecimal) {
+	let node = {
+		operator, 
+		number, 
+		isDecimal,
+	}
+	array.push(node);
+};
 
-function node() {
-	
-}
-
+// Display numbers on the screen
 function displayNumbers() {
-	let aux = _tree;
-	let numberDisplay = "";
-	while (aux != undefined) {
-		let op = "";
-		switch (aux.operator) {
-			case "plus":
-				op = numberDisplay != "" ? " + " : "";
+	numberDisplay = "";
+	let op = "";
+	for (let i = 0; i < array.length; i++) {
+		switch (array[i].operator) {
+			case 'sum':
+				op = " + ";
 				break;
-			case "minus":
-				op = numberDisplay != "" ? " - " : "";
+			case 'sub':
+				op = " - ";
 				break;
-			case "multiply":
-				op = numberDisplay != "" ? " x " : "";
+			case 'mul':
+				op = " × ";
 				break;
-			case "divide":
-				op = numberDisplay != "" ? " / " : "";
+			case 'div':
+				op = " ÷ ";
 				break;
 		}
-		numberDisplay = numberDisplay + aux.number + op;
-		aux = aux.next;
-	};	
-	numberDisplay = numberDisplay + current;
+		// TODO fix first number possibilities
+		numberDisplay += array[i].number + op;
+	}
+	numberDisplay += current;
 	display.innerHTML = numberDisplay;
 }
 
 function clearDisplay() {
-  decimal = false;
+  createNode(undefined, 0, false);
   current = 0;
-  isOperator = false;
-  display.innerHTML = numberDisplay;
+  display.innerHTML = 0;
 }
 
 function backspace() {
@@ -92,53 +88,36 @@ function backspace() {
 	display.innerHTML = numberDisplay;
 }
 
-function addNode(operator) {
-	
-	let node = {
-		operator,
-		number: current,
-		next: undefined,
-	};
-	if (_tree === undefined) {
-		_tree = node;
-		tree_ = node;
-	}
-	else {
-		let aux = _tree;
-		while (aux.next != undefined) {
-			aux = aux.next;
-		};
-	aux.next = node;
-	tree_ = node;
-	}
-	displayNumbers();
-}
-
-
 function operate() {
-	// TODO order priorityu operation
-	let ans = 0;
-	for (let i = 0; i < array.length; i++) {
-		switch (array[i].operator) {
+	// TODO order priority operation
+	createNode(undefined, current, false);
+	//array[array.length-1].number = current;
+	let ans = array[0].number;
+	for (let i = 1; i < array.length; i++) {
+		switch (array[i-1].operator) {
 			case 'sum':
-				ans += array[i].number;
+				ans += Number(array[i].number);
+				console.log(ans);
 				break;
 			case 'sub':
-				ans -= array[i].number;
+				ans -= Number(array[i].number);
 				break;
 			case 'div':
-				ans = ans / array[i].number;
+				ans = ans / Number(array[i].number);
 				break;
 			case 'mul':
-				ans = ans * array[i].number;
+				ans = ans * Number(array[i].number);
+				break;
+			case undefined:
+				ans = ans;
 				break;
 		}
 	}
+	console.table(array);
+	current = 0;
+	array = []
+	createNode('sum', ans, false);
+	displayNumbers();
 }
 
-/*
-{
-	number,
-	operator,
-}
-*/
+//atualiza current - adiciona novo nó quando aperta operador
