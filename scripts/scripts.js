@@ -2,6 +2,7 @@ let current = ""; // last number on display
 let array = []; // operations
 let pristine = true; // true when display cleared and after equals pressed
 let isInteger = true;
+let error = false;
 
 window.addEventListener('DOMContentLoaded', function () {
 	const display = document.querySelector('#display');
@@ -57,35 +58,39 @@ function createNode(operator, number, isDecimal) {
 // Display numbers on the screen
 function displayNumbers() {
 	let numberDisplay = "";
-	if (array.length > 0 || current != "") {
-		let op = "";
-		for (i in array) {
-			switch (array[i].operator) {
-				case 'sum':
-					op = " + ";
-					break;
-				case 'sub':
-					op = (i > 0 || array[i].number !== '' ? " - " : "-");
-					break;
-				case 'mul':
-					op = " × ";
-					break;
-				case 'div':
-					op = " ÷ ";
-					break;
-				case undefined:
-					op = "";
-					break;
+	if (error) numberDisplay = "&infin;";
+	else {
+		if (array.length > 0 || current != "") {
+			let op = "";
+			for (i in array) {
+				switch (array[i].operator) {
+					case 'sum':
+						op = " + ";
+						break;
+					case 'sub':
+						op = (i > 0 || array[i].number !== '' ? " - " : "-");
+						break;
+					case 'mul':
+						op = " × ";
+						break;
+					case 'div':
+						op = " ÷ ";
+						break;
+					case undefined:
+						op = "";
+						break;
+				}
+				numberDisplay += array[i].number + op;
 			}
-			numberDisplay += array[i].number + op;
+			numberDisplay += current;
 		}
-		numberDisplay += current;
+		else numberDisplay = 0; // Fresh start
+		if (numberDisplay.length > 10) {
+			numberDisplay = numberDisplay.slice(0, 9);
+			numberDisplay += '...';
+		}
 	}
-	else numberDisplay = 0; // Fresh start
-	if (numberDisplay.length > 10) {
-		numberDisplay = numberDisplay.slice(0, 9);
-		numberDisplay += '...';
-	}
+	error = false;
 	display.innerHTML = numberDisplay;
 }
 
@@ -103,7 +108,8 @@ function operate() {
 	console.table(array);
 	for (let j = 0; j < array.length; j++) {
 		if (array[j].operator == 'div' || array[j].operator == 'mul') {
-			array[j+1].number = array[j].operator == 'div'
+			if (array[j+1].number == 0) error = true;
+			else array[j+1].number = array[j].operator == 'div'
 														? array[j].number / array[j+1].number
 														: array[j].number * array[j+1].number;
 			array[j].operator = 'skp';
@@ -138,9 +144,9 @@ function operate() {
 				break;
 		}
 	}
-	current = ans;
+	current = !error ? ans : '';
 	pristine = true;
 	isInteger = (current.toString().indexOf('.') >= 0 ? false : true);
-	array = []
+	array = [];
 	displayNumbers();
 }
