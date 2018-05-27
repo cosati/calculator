@@ -1,6 +1,7 @@
 let current = ""; // last number on display
 let array = []; // operations
 let pristine = true; // true when display cleared and after equals pressed
+let isInteger = true;
 
 window.addEventListener('DOMContentLoaded', function () {
 	const display = document.querySelector('#display');
@@ -10,7 +11,7 @@ window.addEventListener('DOMContentLoaded', function () {
 // Add number to display
 function number(n) {
 	// zeros neither to the left nor simultanious
-	current = (pristine || current == 0 ? n : current + n);
+	current = (pristine || (current == 0 && isInteger) ? n : current + n);
 	// Pristine: Pressing a number after displaying a result
 	// should erase the result and display only the pressed number
 	pristine = false;
@@ -24,32 +25,41 @@ function pressOperator(operator) {
 	// if first pressed button is '-', first number will be negative. To correct, press clear
 	if (l != 1 || lastOperator != 'sub' || lastNumber !== '' || current !== '') {
 		// press operator before pressing any number
-		if (l == 0 && current === "") createNode(operator, "", false);
+		if (l == 0 && current === "" && operator == 'sub') createNode(operator, '', false);
+		else if (l == 0 && current === "") createNode(operator, 0, false);
 		// changes last index's operator if operators pressed simultaniously
 		else if (current === "") array[l-1].operator = operator;
 		else createNode(operator, current, false);
 		current = "";
 	}
 	displayNumbers();
+	isInteger = true;
 }
 
-// Adds a number and operator do the array
+function addDecimal() {
+	if (isInteger) {
+		current = (pristine || (current == 0 && isInteger) ? '.' : current + '.');
+		isInteger = false;
+		displayNumbers();
+		pristine = false;
+	}
+}
+
+// Adds a number and operator to the array
 function createNode(operator, number, isDecimal) {
 	let node = {
 		operator,
 		number,
-		isDecimal,
 	}
 	array.push(node);
 };
 
 // Display numbers on the screen
 function displayNumbers() {
-	// TODO ... for larger numbers
 	let numberDisplay = "";
 	if (array.length > 0 || current != "") {
 		let op = "";
-		for (let i = 0; i < array.length; i++) {
+		for (i in array) {
 			switch (array[i].operator) {
 				case 'sum':
 					op = " + ";
@@ -84,12 +94,28 @@ function clearDisplay() {
   current = "";
 	array = [];
 	pristine = true;
+	isInteger = true;
   displayNumbers();
 }
 
 function operate() {
-	// TODO order priority in operations
 	createNode(undefined, current, false);
+	console.table(array);
+	for (let j = 0; j < array.length; j++) {
+		if (array[j].operator == 'div' || array[j].operator == 'mul') {
+			array[j+1].number = array[j].operator == 'div'
+														? array[j].number / array[j+1].number
+														: array[j].number * array[j+1].number;
+			array[j].operator = 'skp';
+		}
+	}
+
+	let k = array.length;
+	while (k--) { // Multiplication and division first!
+		if (array[k].operator == 'skp')
+			array.splice(k, 1);
+	}
+
 	let ans = Number(array[0].number);
 	for (let i = 1; i < array.length; i++) {
 		switch (array[i-1].operator) {
@@ -105,6 +131,8 @@ function operate() {
 			case 'mul':
 				ans = ans * Number(array[i].number);
 				break;
+			case 'skp':
+				break;
 			case undefined:
 				ans = ans;
 				break;
@@ -112,6 +140,7 @@ function operate() {
 	}
 	current = ans;
 	pristine = true;
+	isInteger = (current.toString().indexOf('.') >= 0 ? false : true);
 	array = []
 	displayNumbers();
 }
