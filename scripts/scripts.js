@@ -2,7 +2,7 @@ let current = ""; // last number on display
 let array = []; // operations
 let pristine = true; // true when display cleared and after equals pressed
 let isInteger = true;
-let error = false;
+let error = false; // division by 0
 
 window.addEventListener('DOMContentLoaded', function () {
 	const display = document.querySelector('#display');
